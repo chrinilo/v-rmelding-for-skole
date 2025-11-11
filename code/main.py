@@ -4,7 +4,7 @@
 """
 import pygame
 
-from event_handel import eventhandel
+# from event_handel import eventhandel
 
 window = pygame.display.set_mode((400,400))
 
@@ -13,16 +13,25 @@ class Main_handel:
         self.window = pygame.display.set_mode((400,400))
         self.running= True # om main loopen skal kjøre
 
-    def quit(self, ev):
+    def event_handel(self, ev):
         if ev.type == pygame.QUIT:
             self.running = False
             
+    
+    def name(args):
+        pass
+    
 
     def main(self):
         """funksjonen som skal inholde alt av påkaling for at ting går framover.
         """
         
         while self.running:
-            event = pygame.event.get()
-            eventhandel(event)
+            event = pygame.event.wait()
+            self.event_handel(event)
+            
+            pygame.display.flip()
 
+main = Main_handel()
+main.main()
+pygame.quit()
