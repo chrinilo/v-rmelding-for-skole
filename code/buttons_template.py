@@ -1,6 +1,5 @@
 import pygame
 from important_functions import window
-from icecream import ic
 
 class Button:
     def __init__(self, size: tuple, colour: str):

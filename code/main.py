@@ -47,7 +47,7 @@ class Main_handel:
             
             button_state = button.button_cliced(event)
             while button_state == True:
-                self.button_func.button_one(button_state)
+                self.button_func.button_one()
             pygame.display.flip()
 
 main = Main_handel(important_functions.window)
