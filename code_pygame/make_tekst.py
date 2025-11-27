@@ -6,4 +6,5 @@ class Make_text:
         self.x = x_pos
         self.y = y_pos
         self.text = text
-    
+    def show(self):
+        pygame.display
