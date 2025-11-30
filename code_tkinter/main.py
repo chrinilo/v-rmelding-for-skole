@@ -137,7 +137,7 @@ class Frame1(tk.Frame):
     def viewscreen_3(self) -> None:
         self.delete_children()
         get_temp_now = asyncio.run(self.weather.feels_like_now())
-        self.weather_text = tk.Label(self, text=f"{get_temp_now}")
+        self.weather_text = tk.Label(self, text=f"feels like {get_temp_now}℃")
         self.weather_text.grid(row=1,column=0,padx=(200,0), pady=(10,5),columnspan=1) # 
         
         tk.Label(self, text=asyncio.run(self.weather.get_city())).grid(row=2, column=0)
@@ -163,7 +163,8 @@ class Frame2(tk.Frame):
                         command=lambda:(self.weather.viewscreen_1())).grid(row=2,column=1, padx=0, pady=(30,0  ))
         tk.Radiobutton(self, text="temp 3 dager", value=2, variable=self.which_viewscreen, indicatoron=False, bg="white",
                         command=lambda:(self.weather.viewscreen_2())).grid(row=2,column=2, padx=20, pady=(30,0))
-        tk.Radiobutton(self, text="humidety", value=3, variable=self.which_viewscreen, indicatoron=False, bg="white").grid(row=2,column=3, padx=0, pady=(30,0))
+        tk.Radiobutton(self, text="feels like", value=3, variable=self.which_viewscreen, indicatoron=False, bg="white",
+                        command=lambda:(self.weather.viewscreen_3())).grid(row=2,column=3, padx=0, pady=(30,0))
         self.pack()
 
 app = TK()
