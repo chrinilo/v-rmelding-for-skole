@@ -15,7 +15,7 @@ class Weather:
     async def temp_now(self):
         weather = await self.weather_make()
         weather.datetime
-        return weather.temperature, weather.datetime
+        return weather.temperature#, weather.datetime
     
     
 
@@ -25,59 +25,113 @@ class Weather:
     
     async def forcast(self):
         weather = await self.weather_make()
+        temp_days = []
+        for days in weather:
+            temp_hours = []
+            for hours in days:
+                temp_hours.append(hours.temperature)
+            temp_days.append(temp_hours)
+            print(temp_days)
+        return temp_days
 
 class TK (tk.Tk):
     def __init__(self):
-        self.weather = Weather("halden")
         super().__init__()
         self.geometry("400x400")
         self.title("hello world!")
 
 class Frame1(tk.Frame):
-    def __init__(self, parent_app, weather):
+    def __init__(self, parent_app):
         super().__init__(parent_app)
-        self.test = tk.StringVar(self, "asyncio.run(weather.temp_now())")
+        self._location = tk.StringVar(self, "halden")
+        self.weather = Weather(self._location.get())
         self.parent = parent_app
-        
-    def button(self):
-        self.test.set( self.test.get())
-        
-    def viewscreen_1(self):
-        
+    
+    
+    def delete_children(self):
+        """
+        deletets all lables and buttons on the screen.
+        """
         for c in self.winfo_children():
             for ch in c.winfo_children():
-                # if isinstance(ch, tk.Button) or isinstance(ch, tk.Label):
-                    print(ch)
-                    ch.destroy()
+                print(ch)
+                ch.destroy()
             c.destroy()
+    
+    def city_textbox(self):
+        """
+        makes the textbox for which city you want to .
+        """
+        self.text_box_lable = tk.Label(self, text="by navn:")
+        self.text_box_lable.grid(row=4, column=0)
+        self.text_box = tk.Text(self, height=1, width=5)
+        print()
+        self.text_box.grid(row=4,column=1)
+    
+    def change_city(self):
+        # TODO get to run when losing focus on the textbox
+        print(self.text_box.get('1.0',tk.END))
         
-        self.weather_text = tk.Label(self, textvariable=self.test)
-        self.weather_text.pack(pady=(10,5)) # row=1,column=2
+
+    def viewscreen_1(self):
+        """
+        loads everything for the temprature now button.
+        """
+        self.delete_children()
+        get_temp_now = asyncio.run(self.weather.temp_now())
+        self.weather_text = tk.Label(self, text=f"{get_temp_now}")
+        self.weather_text.grid(row=1,column=0,padx=(200,0), pady=(10,5),columnspan=1) # 
         
-        self.but = tk.Button(self, command=self.button, text="helloworld")
-        self.but.pack()
+        self.text_box_lable = tk.Label(self, text="by navn:")
+        self.text_box_lable.grid(row=2, column=0)
+        self.text_box = tk.Text(self, height=1, width=5)
+        self.text_box.grid(row=2,column=1)
         
-        print(self.winfo_children())
         self.pack(fill="x", expand=True)
+    def viewscreen_2(self):
+        """
+        loads the curent forcast in three hour intervals.
+        """
+        self.delete_children()
         
+        forcast = asyncio.run(self.weather.forcast())
+        tk.Label(self, text="klokken:").grid(row=0, column=0)
+        for i in range(len(forcast)):
+            for j in range(len(forcast[i])):
+                tk.Label(self, text=(j*3)).grid(row=i, column=j+1)
+            tk.Label(self, text=f"dag: {(i+1)}").grid(row=i+1, column=0)
+            
+        for i in range(len(forcast)):
+            for j in range(len(forcast[i])):
+                tk.Label(self, text=f"{forcast[i][j]}").grid(row=i+1,column=j+1,padx=10, pady=(10,5),columnspan=1)
+        
+        self.city_textbox()
+        
+        self.pack(fill="x", expand=True)
+        if self.text_box.focus_displayof():
+            self.change_city()
 
 class Frame2(tk.Frame):
     def __init__(self,parent_app, weather_frame):
         super().__init__(parent_app)
-        self.which_viewscreen = tk.IntVar(self, 0)
+        self.which_viewscreen = tk.IntVar(self, 0) # not in use
         self.weather = weather_frame
         
     def make_buttons(self):
+        """
+        loads the buttons to change the viewscreen
+        """
         tk.Radiobutton(self, text="tempratur nå", value=1, variable=self.which_viewscreen, indicatoron=False, bg="white",
                         command=lambda:(self.weather.viewscreen_1())).grid(row=2,column=1, padx=0, pady=(30,0  ))
-        tk.Radiobutton(self, text="temp 3 dager", value=2, variable=self.which_viewscreen, indicatoron=False, bg="white").grid(row=2,column=2, padx=20, pady=(30,0))
+        tk.Radiobutton(self, text="temp 3 dager", value=2, variable=self.which_viewscreen, indicatoron=False, bg="white",
+                        command=lambda:(self.weather.viewscreen_2())).grid(row=2,column=2, padx=20, pady=(30,0))
         tk.Radiobutton(self, text="humidety", value=3, variable=self.which_viewscreen, indicatoron=False, bg="white").grid(row=2,column=3, padx=0, pady=(30,0))
         self.pack()
 
-# weather = Weather("halden")
-weather = 1
+
+# weather = 1
 app = TK()
-frame1 = Frame1(app, weather)
+frame1 = Frame1(app)
 frame2 = Frame2(app, frame1)
 frame2.make_buttons()
 app.mainloop()

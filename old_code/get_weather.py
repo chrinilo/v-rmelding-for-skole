@@ -1,5 +1,5 @@
 import python_weather, asyncio
-import time
+
 
 class Weather:
     def __init__(self, location: str, time: int) -> None:
@@ -12,8 +12,6 @@ class Weather:
             return weather
             
     
-
-
     
     async def temp_now(self):
         weather = await self.weather_make()
